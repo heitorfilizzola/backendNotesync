@@ -1,9 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const winston = require('winston');
 
-dotenv.config();
+const envPath = path.resolve(__dirname, '../../.env');
+dotenv.config({ path: envPath });
 
 const logger = winston.createLogger({
   level: 'info',
