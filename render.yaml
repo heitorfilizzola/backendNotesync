@@ -43,7 +43,7 @@ services:
           type: web
           property: hostport
     healthCheckPath: /health
-    rootDir: services/tasks-serviceservices:
+    rootDir: services/tasks-serviceservices
   # Auth Service
   - type: web
     name: notesync-auth-service
