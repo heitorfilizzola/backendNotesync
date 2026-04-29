@@ -12,7 +12,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_v81BDSuRCctN@ep-cool-cake-ad43u4dl-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+        value: postgresql://neondb_owner:npg_7WCQZEk8UDXl@ep-aged-darkness-ac55l1ow-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: JWT_SECRET
         generateValue: true
     healthCheckPath: /health
@@ -31,17 +31,61 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_v81BDSuRCctN@ep-cool-cake-ad43u4dl-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+        value: postgresql://neondb_owner:npg_7WCQZEk8UDXl@ep-aged-darkness-ac55l1ow-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: JWT_SECRET
         fromService:
           name: notesync-auth-service
           type: web
-          property: env.JWT_SECRET
+          envVarKey: JWT_SECRET
       - key: AUTH_SERVICE_URL
         fromService:
           name: notesync-auth-service
           type: web
+          property: hostport
+    healthCheckPath: /health
+    rootDir: services/tasks-serviceservices:
+  # Auth Service
+  - type: web
+    name: notesync-auth-service
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_7WCQZEk8UDXl@ep-aged-darkness-ac55l1ow-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: JWT_SECRET
+        generateValue: true
+    healthCheckPath: /health
+    rootDir: services/auth-service
+
+  # Tasks Service
+  - type: web
+    name: notesync-tasks-service
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_7WCQZEk8UDXl@ep-aged-darkness-ac55l1ow-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: JWT_SECRET
+        fromService:
+          name: notesync-auth-service
+          type: web
+          envVarKey: JWT_SECRET
+      - key: AUTH_SERVICE_URL
+        fromService:
+          name: notesync-auth-service
+          type: web
+          property: hostport
     healthCheckPath: /health
     rootDir: services/tasks-service
-
-
