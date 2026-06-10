@@ -1,4 +1,5 @@
 const { z } = require("zod");
+const { VALID_TASK_STATUSES } = require("./utils/constants");
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Título da tarefa é obrigatório"),
@@ -13,7 +14,7 @@ const createTaskSchema = z.object({
     deadlineDateOnly.setHours(0, 0, 0, 0);
     return deadlineDateOnly >= now;
   }, { message: "Não é possível definir uma data que já passou" }).optional().nullable()).or(z.union([z.null(), z.literal("")]).transform(() => null)),
-  status: z.enum(['todo', 'in_progress', 'done']).optional()
+  status: z.enum(VALID_TASK_STATUSES).optional()
 });
 
 const updateTaskSchema = z.object({
@@ -30,11 +31,11 @@ const updateTaskSchema = z.object({
     deadlineDateOnly.setHours(0, 0, 0, 0);
     return deadlineDateOnly >= now;
   }, { message: "Não é possível definir uma data que já passou" }).optional().nullable()).or(z.union([z.null(), z.literal("")]).transform(() => null)),
-  status: z.enum(['todo', 'in_progress', 'done']).optional()
+  status: z.enum(VALID_TASK_STATUSES).optional()
 });
 
 const updateTaskStatusSchema = z.object({
-  status: z.enum(['todo', 'in_progress', 'done'], { required_error: "Status é obrigatório" })
+  status: z.enum(VALID_TASK_STATUSES, { required_error: "Status é obrigatório" })
 });
 
 module.exports = {

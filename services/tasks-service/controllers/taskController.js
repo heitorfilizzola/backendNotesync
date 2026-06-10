@@ -1,21 +1,19 @@
 const catchAsync = require("../middlewares/catchAsync");
 
-const getTarefa = () => {
-  return require("../models/Tarefa");
-};
+const { Tarefa } = require("../models");
+const { TASK_STATUSES } = require("../utils/constants");
 
 module.exports = {
   createTask: catchAsync(async (req, res) => {
     const { title, description, deadline, status } = req.body;
     const userId = req.usuario.id;
 
-    const Tarefa = getTarefa();
     const novaTarefa = await Tarefa.create({
       title,
       description,
       deadline,
       userId,
-      status: status || 'todo'
+      status: status || TASK_STATUSES.TODO
     });
 
     res.status(201).json(novaTarefa);
@@ -23,8 +21,6 @@ module.exports = {
 
   getTasks: catchAsync(async (req, res) => {
     const userId = req.usuario.id;
-    const Tarefa = getTarefa();
-
     const tarefas = await Tarefa.findAll({
       where: { userId },
       order: [['createdAt', 'DESC']]
@@ -37,7 +33,6 @@ module.exports = {
     const { id } = req.params;
     const userId = req.usuario.id;
 
-    const Tarefa = getTarefa();
     const tarefa = await Tarefa.findOne({
       where: { id, userId }
     });
@@ -54,7 +49,6 @@ module.exports = {
     const { title, description, deadline, status } = req.body;
     const userId = req.usuario.id;
 
-    const Tarefa = getTarefa();
     const tarefa = await Tarefa.findOne({
       where: { id, userId }
     });
@@ -79,7 +73,6 @@ module.exports = {
     const { status } = req.body;
     const userId = req.usuario.id;
 
-    const Tarefa = getTarefa();
     const tarefa = await Tarefa.findOne({
       where: { id, userId }
     });
@@ -97,7 +90,6 @@ module.exports = {
     const { id } = req.params;
     const userId = req.usuario.id;
 
-    const Tarefa = getTarefa();
     const tarefa = await Tarefa.findOne({
       where: { id, userId }
     });

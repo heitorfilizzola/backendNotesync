@@ -27,7 +27,7 @@ async function startServer() {
     }
     
     // Sincronizar modelos
-    const Tarefa = require('./models/Tarefa');
+    const { Tarefa } = require('./models');
     
     // Sincronizar tabelas com alterações
     await sequelize.sync({ alter: true });

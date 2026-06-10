@@ -2,15 +2,12 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const catchAsync = require("../middlewares/catchAsync");
 
-const getUsuario = () => {
-  return require("../models/Usuario");
-};
+const { Usuario } = require("../models");
 
 module.exports = {
   register: catchAsync(async (req, res) => {
     const { nome, email, senha } = req.body;
 
-    const Usuario = getUsuario();
     const usuarioExistente = await Usuario.findOne({ 
       where: { email },
       attributes: ['id', 'email']
@@ -19,7 +16,8 @@ module.exports = {
       return res.status(400).json({ error: "Email já cadastrado" });
     }
 
-    const senhaHash = await bcrypt.hash(senha, 8);
+    const saltRounds = parseInt(process.env.BCRYPT_ROUNDS, 10) || 8;
+    const senhaHash = await bcrypt.hash(senha, saltRounds);
     const role = email.endsWith("@admin.com") ? "admin" : "user";
 
     const novoUsuario = await Usuario.create({ nome, email, senha: senhaHash, role });
@@ -27,7 +25,7 @@ module.exports = {
     const token = jwt.sign(
       { id: novoUsuario.id, role: novoUsuario.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
     const usuarioSemSenha = novoUsuario.toJSON();
@@ -39,7 +37,6 @@ module.exports = {
   login: catchAsync(async (req, res) => {
     const { email, senha } = req.body;
 
-    const Usuario = getUsuario();
     const usuario = await Usuario.findOne({ where: { email } });
     if (!usuario) {
       return res.status(401).json({ error: "Credenciais inválidas" });
@@ -53,7 +50,7 @@ module.exports = {
     const token = jwt.sign(
       { id: usuario.id, role: usuario.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
     );
 
     const usuarioSemSenha = usuario.toJSON();

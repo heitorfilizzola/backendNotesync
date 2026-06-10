@@ -26,7 +26,7 @@ async function startServer() {
     }
     
     // Sincronizar modelos (usar force: false para não recriar tabelas existentes)
-    const Usuario = require('./models/Usuario');
+    const { Usuario } = require('./models');
     
     // Sincronizar sem alterar estrutura existente (mais rápido)
     // alter: false evita verificações pesadas de estrutura
