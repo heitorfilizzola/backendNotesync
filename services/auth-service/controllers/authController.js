@@ -10,32 +10,15 @@ module.exports = {
   register: catchAsync(async (req, res) => {
     const { nome, email, senha } = req.body;
 
-    if (!nome || !email || !senha) {
-      return res.status(400).json({ error: "Todos os campos são obrigatórios" });
-    }
-
-    // Validação rápida de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Email inválido" });
-    }
-
-    // Validação de senha mínima
-    if (senha.length < 6) {
-      return res.status(400).json({ error: "Senha deve ter no mínimo 6 caracteres" });
-    }
-
     const Usuario = getUsuario();
-    // Query otimizada: busca apenas o campo email (mais rápido)
     const usuarioExistente = await Usuario.findOne({ 
       where: { email },
-      attributes: ['id', 'email'] // Buscar apenas campos necessários
+      attributes: ['id', 'email']
     });
     if (usuarioExistente) {
       return res.status(400).json({ error: "Email já cadastrado" });
     }
 
-    // Otimizar bcrypt: usar 8 rounds ao invés de 10 (ainda seguro, mas mais rápido)
     const senhaHash = await bcrypt.hash(senha, 8);
     const role = email.endsWith("@admin.com") ? "admin" : "user";
 
@@ -55,10 +38,6 @@ module.exports = {
 
   login: catchAsync(async (req, res) => {
     const { email, senha } = req.body;
-
-    if (!email || !senha) {
-      return res.status(400).json({ error: "Email e senha são obrigatórios" });
-    }
 
     const Usuario = getUsuario();
     const usuario = await Usuario.findOne({ where: { email } });
