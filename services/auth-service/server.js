@@ -2,6 +2,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const app = require('./app');
 const sequelize = require('./config/db');
+const logger = require('./utils/logger');
 
 const PORT = process.env.PORT || 3001;
 
@@ -43,7 +44,12 @@ async function startServer() {
     
     // Error handler
     app.use((err, req, res, next) => {
-      console.error('❌ [Auth Service] Erro:', err);
+      logger.error('❌ [Auth Service] Erro:', {
+        message: err.message,
+        stack: err.stack,
+        path: req.path,
+        method: req.method
+      });
       res.status(500).json({ 
         error: 'Erro interno do servidor',
         service: 'auth-service',

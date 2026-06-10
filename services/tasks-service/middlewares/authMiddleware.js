@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
+const logger = require("../utils/logger");
 
 // Função para validar token localmente ou via auth service
 const validateToken = async (token) => {
@@ -22,7 +23,7 @@ const validateToken = async (token) => {
           return response.data.user;
         }
       } catch (err) {
-        console.error("Erro ao validar token via auth service:", err.message);
+        logger.error("Erro ao validar token via auth service:", { error: err.message });
       }
     }
     throw error;

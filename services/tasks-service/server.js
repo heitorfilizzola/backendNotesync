@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const app = require('./app');
 const sequelize = require('./config/db');
 const { DataTypes } = require('sequelize');
+const logger = require('./utils/logger');
 
 const PORT = process.env.PORT || 3002;
 
@@ -95,7 +96,12 @@ async function startServer() {
     
     // Error handler
     app.use((err, req, res, next) => {
-      console.error('❌ [Tasks Service] Erro:', err);
+      logger.error('❌ [Tasks Service] Erro:', {
+        message: err.message,
+        stack: err.stack,
+        path: req.path,
+        method: req.method
+      });
       res.status(500).json({ 
         error: 'Erro interno do servidor',
         service: 'tasks-service',
